@@ -41,14 +41,17 @@ public class NovelRenderer : MonoBehaviour, IPauseable
     private int _ggsRow = 0;
     private int _currentCharNum = 0;
 
+    private bool _isCommandFirstTime = true;
     private bool _isDisplaying = false;
     private bool _isClick = false;
-    private bool _isCommandFirstTime = true;
     private bool _isPause = false;
 
     private const int NAME_TEXT_COLUMN = 0;
     private const int MAIN_TEXT_COLUMN = 1;
     private const int ACTION_TEXT_COLUMN = 2;
+
+    private const string ANIMATION_COMMAND_IDENTIFIER = "&CharacterAnim";
+    private const string SFX_COMMAND_INDENTIFIER = "&Sound";
 
     private void Update()
     {
@@ -117,12 +120,12 @@ public class NovelRenderer : MonoBehaviour, IPauseable
         string action = _textDataJaggedArray[_ggsRow][ACTION_TEXT_COLUMN];
         switch (command)
         {
-            case "&CharacterAnim":
+            case ANIMATION_COMMAND_IDENTIFIER:
                 Debug.Log("メインキャラアニメーションアニメーション" + action);
                 _characterAnimator.Play(action);
                 break;
-            case "&Sound":
-                SoundManager.Instance.UseSound(action);
+            case SFX_COMMAND_INDENTIFIER:
+                SoundManager.Instance.UseSFX(action);
                 break;
             default:
                 Debug.LogError(command + action + "というコマンドは無効です");

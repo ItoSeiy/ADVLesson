@@ -57,7 +57,7 @@ public class SoundManager : SingletonMonoBehaviour<SoundManager>
     /// <param name="fadeTime">どのくらい時間をかけるか</param>
     public void FadeAudioSource(AudioSource targetAudioSouece, float targetVol, float fadeTime)
     {
-        //targetAudioSouece.DOFade(targetVol, fadeTime);
+        targetAudioSouece.DOFade(targetVol, fadeTime);
     }
 
     /// <summary>
