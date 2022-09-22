@@ -5,70 +5,66 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Overdose.Novel
+public class GSSReader : MonoBehaviour
 {
-    public class GSSReader : MonoBehaviour
+    public string[][] DataJaggedArray { get; private set; }
+    public bool IsLoading { get; private set; }
+
+    public event Action OnLoadEnd;
+
+    [SerializeField]
+    private string SheetID = "読み込むシートのID";
+
+    [SerializeField]
+    private string SheetName = "読み込むシート";
+
+    void Start()
     {
-        public string[][] Datas { get; private set; }
-        public bool IsLoading { get; private set; }
+        Load();
+    }
 
-        public event Action OnLoadEnd;
+    public void Load() => StartCoroutine(GetFromWeb());
 
-        [SerializeField]
-        private string SheetID = "読み込むシートのID";
+    private IEnumerator GetFromWeb()
+    {
+        IsLoading = true;
 
-        [SerializeField]
-        private string SheetName = "読み込むシート";
+        var tqx = "tqx=out:csv";
+        var url = "https://docs.google.com/spreadsheets/d/" + SheetID + "/gviz/tq?" + tqx + "&sheet=" + SheetName;
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        yield return request.SendWebRequest();
 
-        void Start()
+        IsLoading = false;
+
+        var protocol_error = request.result == UnityWebRequest.Result.ProtocolError;
+        var connection_error = request.result == UnityWebRequest.Result.ConnectionError;
+        if (protocol_error || connection_error)
         {
-            Load();
+            Debug.LogError(request.error);
+        }
+        else
+        {
+            DataJaggedArray = ConvertCSVtoJaggedArray(request.downloadHandler.text);
+            OnLoadEnd.Invoke();
         }
 
-        public void Load() => StartCoroutine(GetFromWeb());
+    }
 
-        private IEnumerator GetFromWeb()
+    private string[][] ConvertCSVtoJaggedArray(string t)
+    {
+        var reader = new StringReader(t);
+        reader.ReadLine();  //ヘッダ読み飛ばし
+        var rows = new List<string[]>();
+        while (reader.Peek() >= 0)
         {
-            IsLoading = true;
-
-            var tqx = "tqx=out:csv";
-            var url = "https://docs.google.com/spreadsheets/d/" + SheetID + "/gviz/tq?" + tqx + "&sheet=" + SheetName;
-            UnityWebRequest request = UnityWebRequest.Get(url);
-            yield return request.SendWebRequest();
-
-            IsLoading = false;
-
-            var protocol_error = request.result == UnityWebRequest.Result.ProtocolError;
-            var connection_error = request.result == UnityWebRequest.Result.ConnectionError;
-            if (protocol_error || connection_error)
+            var line = reader.ReadLine();
+            var elements = line.Split(',');
+            for (var i = 0; i < elements.Length; i++)
             {
-                Debug.LogError(request.error);
+                elements[i] = elements[i].TrimStart('"').TrimEnd('"');
             }
-            else
-            {
-                Datas = ConvertCSVtoJaggedArray(request.downloadHandler.text);
-                OnLoadEnd.Invoke();
-            }
-
+            rows.Add(elements);
         }
-
-
-        private string[][] ConvertCSVtoJaggedArray(string t)
-        {
-            var reader = new StringReader(t);
-            reader.ReadLine();  //ヘッダ読み飛ばし
-            var rogws = new List<string[]>();
-            while (reader.Peek() >= 0)
-            {
-                var line = reader.ReadLine();
-                var elements = line.Split(',');
-                for (var i = 0; i < elements.Length; i++)
-                {
-                    elements[i] = elements[i].TrimStart('"').TrimEnd('"');
-                }
-                rows.Add(elements);
-            }
-            return rows.ToArray();
-        }
+        return rows.ToArray();
     }
 }
