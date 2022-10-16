@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 public class GSSReader : MonoBehaviour
 {
     public string[][] DataJaggedArray { get; private set; }
+
     public bool IsLoading { get; private set; }
 
     public event Action OnLoadEnd;
@@ -45,9 +46,8 @@ public class GSSReader : MonoBehaviour
         else
         {
             DataJaggedArray = ConvertCSVtoJaggedArray(request.downloadHandler.text);
-            OnLoadEnd.Invoke();
+            OnLoadEnd?.Invoke();
         }
-
     }
 
     private string[][] ConvertCSVtoJaggedArray(string t)

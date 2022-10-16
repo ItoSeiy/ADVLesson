@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13e9a15de62ba9d43862e225c5de06d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SheetID: "\u8AAD\u307F\u8FBC\u3080\u30B7\u30FC\u30C8\u306EID"
-  SheetName: "\u8AAD\u307F\u8FBC\u3080\u30B7\u30FC\u30C8"
+  SheetID: 1N5PYmEHymuyL9Z81YzK2R-3FLGYAGAymLVWG3BGcMyQ
+  SheetName: "\u30B7\u30FC\u30C81"
 --- !u!4 &201759177
 Transform:
   m_ObjectHideFlags: 0
